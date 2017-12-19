@@ -1,6 +1,6 @@
 # docker-apache-php Web Service (php 7.1 apache)
 
-A Docker container to provide a web service for executing applications written in PHP.
+A Docker container to provide a web service for executing applications written in PHP. 
 
 The container runs an instance of Apache Webserver for web applications written in PHP to display and retrieve data through standard web protocols. This container also provides connections to other service containers for data storage and sending e-mail messages.
 

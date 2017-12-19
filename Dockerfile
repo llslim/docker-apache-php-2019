@@ -11,6 +11,7 @@ RUN set -ex \
 		libjpeg62-turbo-dev \
 		libpng12-dev \
 		libpq-dev \
+		libxml2-dev \
 	' \
 	&&  supportServices='msmtp msmtp-mta' \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps $supportServices \
