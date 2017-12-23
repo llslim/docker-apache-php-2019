@@ -12,16 +12,18 @@ RUN set -ex \
 		libpng12-dev \
 		libpq-dev \
 		libxml2-dev \
-	' \
+	'  \
 	&&  supportServices='msmtp msmtp-mta' \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps $supportServices \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& docker-php-ext-configure gd \
+	&& rm -rf /var/lib/apt/lists/*
+
+	RUN docker-php-ext-configure gd \
 		--with-jpeg-dir=/usr \
 		--with-png-dir=/usr \
-	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql zip bcmath soap \
+	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql zip bcmath soap
+
+	RUN pecl config-set php_ini /usr/local/etc/php/conf.d/xdebug.ini \
 	&& pecl install xdebug \
-	&& docker-php-ext-install xdebug \
 	&& apt-mark manual \
 		libjpeg62-turbo \
 		libpq5 \
