@@ -22,7 +22,8 @@ RUN set -ex \
 		--with-png-dir=/usr \
 	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql zip bcmath soap
 
-	RUN pecl config-set php_ini /usr/local/etc/php/conf.d/xdebug.ini \
+	RUN touch /usr/local/etc/php/conf.d/xdebug.ini \
+	&& pecl config-set php_ini /usr/local/etc/php/conf.d/xdebug.ini \
 	&& pecl install xdebug \
 	&& apt-mark manual \
 		libjpeg62-turbo \
