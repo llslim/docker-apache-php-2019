@@ -1,10 +1,10 @@
-FROM php:7-apache
+FROM php:7.0-apache
 MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
 
 RUN set -ex \
 	&& buildDeps=' \
 		libjpeg62-turbo-dev \
-		libpng-dev \
+		libpng12-dev \
 		libpq-dev \
 	' \
   &&  supportServices=' \
@@ -13,7 +13,7 @@ RUN set -ex \
 	' \
 	&& markedLibs=' \
 		libjpeg62-turbo \
-		libpng16-16 \
+		libpng12-0 \
 		libpq5 \
 	' \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps $supportServices \
@@ -29,7 +29,7 @@ RUN set -ex \
 	&& touch /usr/local/etc/php/conf.d/xdebug.ini \
 	&& pecl channel-update pecl.php.net \
 	&& pecl config-set php_ini /usr/local/etc/php/conf.d/xdebug.ini \
-	&& pecl install xdebug-2.6.0beta1 \
+	&& pecl install xdebug \
 
 	# Mark the library packages that were installed with development as manual
 	# so the extensions can use them.
