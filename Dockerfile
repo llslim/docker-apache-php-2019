@@ -1,37 +1,44 @@
-# this dockerfile is a modified version of the official drupal dockerfile
-# https://github.com/docker-library/drupal/blob/cdbfea0a45633dbdbec997334cb902405445a49c/8.4/apache/Dockerfile
-
-FROM php:7.1-apache
+FROM php:7-apache
 MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
-RUN a2enmod rewrite
 
-# install PHP extensions
 RUN set -ex \
 	&& buildDeps=' \
 		libjpeg62-turbo-dev \
-		libpng12-dev \
+		libpng-dev \
 		libpq-dev \
-		libxml2-dev \
-	'  \
-	&&  supportServices='msmtp msmtp-mta' \
+	' \
+  &&  supportServices=' \
+				msmtp \
+				msmtp-mta \
+	' \
+	&& markedLibs=' \
+		libjpeg62-turbo \
+		libpng16-16 \
+		libpq5 \
+	' \
 	&& apt-get update && apt-get install -y --no-install-recommends $buildDeps $supportServices \
-	&& rm -rf /var/lib/apt/lists/*
+	&& rm -rf /var/lib/apt/lists/* \
 
-	RUN docker-php-ext-configure gd \
+	# build php extensions with development dependencies, and install them
+	&& docker-php-ext-configure gd \
 		--with-jpeg-dir=/usr \
 		--with-png-dir=/usr \
-	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql zip bcmath soap
+	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql zip \
 
-	RUN touch /usr/local/etc/php/conf.d/xdebug.ini \
+  # install xdebug extension
+	&& touch /usr/local/etc/php/conf.d/xdebug.ini \
+	&& pecl channel-update pecl.php.net \
 	&& pecl config-set php_ini /usr/local/etc/php/conf.d/xdebug.ini \
-	&& pecl install xdebug \
-	&& apt-mark manual \
-		libjpeg62-turbo \
-		libpq5 \
-	&& apt-get purge -y --auto-remove $buildDeps
+	&& pecl install xdebug-2.6.0beta1 \
 
-COPY drupal-*.ini /usr/local/etc/php/conf.d/
+	# Mark the library packages that were installed with development as manual
+	# so the extensions can use them.
+	# PHP will issue 'WARNING' messages without these libraries
+	&& apt-mark manual $markedLibs \
 
-COPY msmtprc /etc/msmtprc
+	# remove unneeded development sources to reduce size of image
+	&& apt-get purge -y --auto-remove $buildDeps \
+
+	&& a2enmod rewrite
 
 WORKDIR /var/www/html/
