@@ -30,8 +30,9 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x | bash -
 # install nodejs to use in conjunction to php.
 # install git, rsync, wget, and openssh-client to retrieve and share code
 # install less for file snooping, and because less is more
-RUN apt-get install -y --no-install-recommends msmtp msmtp-mta php5-xdebug \
+RUN apt-get install -y --no-install-recommends msmtp msmtp-mta  \
      mysql-client nodejs git rsync wget openssh-client less zip unzip gzip tar \
+	&& pecl install xdebug-2.5.5 \
 	&& rm -rf /var/lib/apt/lists/*
 
 # base production configuration for apache PHP module
