@@ -44,4 +44,6 @@ RUN set -ex \
 	\
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	 rm -rf /var/lib/apt/lists/* 
+
+	 COPY drupal-* /usr/local/etc/php/conf.d/
 	 WORKDIR /var/www/html/
