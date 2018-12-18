@@ -1,36 +1,35 @@
-FROM php:7.2-apache
+FROM php:7.3-apache
 MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
 
 RUN set -ex \
 	\
 	if command -v a2enmod; then \
-		a2enmod rewrite; \
+		a2enmod rewrite ssl; \
 	fi \
-	\
-	savedAptMark="$(apt-mark showmanual)"; \
-	\
  buildDeps=' \
 		libjpeg-dev \
 		libpng-dev \
 		libpq-dev \
+		libzip-dev \
 	'; \
   supportServices=' \
 				msmtp \
 				msmtp-mta \
 	'; \
 	 apt-get update; \
-	 apt-get install -y --no-install-recommends $buildDeps $supportServices; \
-	 \
+	 apt-get install -y --no-install-recommends $supportServices; \
+	 savedAptMark="$(apt-mark showmanual)"; \
+	 apt-get install -y --no-install-recommends $buildDeps; \
 	# build php extensions with development dependencies, and install them
-	docker-php-ext-configure gd \
-		--with-jpeg-dir=/usr \
-		--with-png-dir=/usr ; \
-	docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql zip; \
+	docker-php-ext-configure \
+	  gd --with-jpeg-dir=/usr --with-png-dir=/usr; \
+	docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql mysqli zip; \
 	 # install xdebug extension
-	touch /usr/local/etc/php/conf.d/xdebug.ini; \
+	touch /tmp/xdebug.ini; \
+	chmod 666 /tmp/xdebug.ini; \
 	pecl channel-update pecl.php.net; \
 	pecl config-set php_ini /usr/local/etc/php/conf.d/xdebug.ini; \
-	pecl install xdebug; \
+	pecl install xdebug-beta; \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 	apt-mark auto '.*' > /dev/null; \
 	apt-mark manual $savedAptMark; \
@@ -43,7 +42,15 @@ RUN set -ex \
 		| xargs -rt apt-mark manual; \
 	\
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-	 rm -rf /var/lib/apt/lists/* 
+	 rm -rf /var/lib/apt/lists/*
+
+#	 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+#	  -keyout /etc/ssl/private/ssl-cert-llslim.key -out /etc/ssl/certs/ssl-cert-llslim.pem \
+#		 -subj "/C=US/ST=NC/L=Vien/O=Security/OU=Development/CN=localhost"
+
 
 	 COPY drupal-* /usr/local/etc/php/conf.d/
+	 COPY ./msmtprc /etc/msmtprc
+
+	 EXPOSE 443
 	 WORKDIR /var/www/html/
