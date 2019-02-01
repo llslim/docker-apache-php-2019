@@ -29,7 +29,7 @@ RUN set -ex \
 	chmod 666 /tmp/xdebug.ini; \
 	pecl channel-update pecl.php.net; \
 	pecl config-set php_ini /usr/local/etc/php/conf.d/xdebug.ini; \
-	pecl install xdebug-beta; \
+	pecl install xdebug-2.7.0beta1; \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 	apt-mark auto '.*' > /dev/null; \
 	apt-mark manual $savedAptMark; \
