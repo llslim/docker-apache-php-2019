@@ -1,4 +1,4 @@
-FROM php:7.3-apache
+FROM php:7.2-apache
 MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
 
 RUN set -ex \
@@ -15,6 +15,7 @@ RUN set -ex \
   supportServices=' \
 				msmtp \
 				msmtp-mta \
+				gdb \
 	'; \
 	 apt-get update; \
 	 apt-get install -y --no-install-recommends $supportServices; \
@@ -29,7 +30,7 @@ RUN set -ex \
 	chmod 666 /tmp/xdebug.ini; \
 	pecl channel-update pecl.php.net; \
 	pecl config-set php_ini /usr/local/etc/php/conf.d/xdebug.ini; \
-	pecl install xdebug-2.7.0RC2; \
+	pecl install xdebug; \
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 	apt-mark auto '.*' > /dev/null; \
 	apt-mark manual $savedAptMark; \
