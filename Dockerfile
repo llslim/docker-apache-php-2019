@@ -23,8 +23,10 @@ RUN set -eux; \
 	 apt-get install -y --no-install-recommends $buildDeps; \
 	# build php extensions with development dependencies, and install them
 	docker-php-ext-configure \
-	  gd --with-jpeg --with-png \
-	docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql mysqli zip; \
+	  gd --with-jpeg \
+		; \
+	docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql mysqli zip \
+	; \
 	 # install xdebug extension
 	touch /tmp/xdebug.ini; \
 	chmod 666 /tmp/xdebug.ini; \
