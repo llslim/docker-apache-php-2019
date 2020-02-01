@@ -1,11 +1,10 @@
 FROM php:7-apache
 MAINTAINER Kevin Williams (@llslim) <info@llslim.com>
 
-RUN set -ex \
-	\
+RUN set -eux; \
 	if command -v a2enmod; then \
 		a2enmod rewrite ssl; \
-	fi \
+	fi; \
  buildDeps=' \
 		libjpeg-dev \
 		libpng-dev \
@@ -23,7 +22,7 @@ RUN set -ex \
 	 apt-get install -y --no-install-recommends $buildDeps; \
 	# build php extensions with development dependencies, and install them
 	docker-php-ext-configure \
-	  gd --with-jpeg-dir=/usr --with-png-dir=/usr; \
+	  gd --with-jpeg --with-png \
 	docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql mysqli zip; \
 	 # install xdebug extension
 	touch /tmp/xdebug.ini; \
