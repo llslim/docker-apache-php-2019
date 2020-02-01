@@ -10,6 +10,7 @@ RUN set -eux; \
 		libpng-dev \
 		libpq-dev \
 		libzip-dev \
+		libonig-dev \
 	'; \
   supportServices=' \
 				msmtp \
