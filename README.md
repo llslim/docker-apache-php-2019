@@ -1,4 +1,4 @@
-# docker-apache-php Web Service (php 7.3 apache)
+# docker-apache-php Web Service (php 7.4 apache)
 
 A Docker container to provide a web service for executing applications written in PHP.
 
